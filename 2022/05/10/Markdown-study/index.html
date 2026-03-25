@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
-    <title>Archives | Tcd_Rose</title>
+    <title>Markdown 语法使用说明 | Tcd_Rose</title>
     <meta name="author" content="Tcd_Rose" />
     <meta name="description" content="你来了~" />
     <meta name="keywords" content="Tcd_Rose1" />
@@ -40,7 +40,13 @@
 
 
 
-<script src="/js/lib/search.js"></script>
+
+
+
+<script src="https://s4.zstatic.net/ajax/libs/waline/2.15.8/waline.min.js"></script>
+<link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/waline/2.15.8/waline.min.css" />
+<link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/waline/2.15.8/waline-meta.min.css" />
+
 
 
 
@@ -152,88 +158,73 @@
 </transition>
 
         <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
+            <div class="article">
+    <div>
+        <h1>Markdown 语法使用说明</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2022/5/10
+        </span>
+        
+        <span class="category">
+            <a href="/categories/tutorial/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                教程
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
             
-<div id="archives">
-    
-    <input id="search-bar" class="input" placeholder="搜索" v-model="rawSearch" />
-    
-    <div id="timeline-wrap" ref="timeline">
-        
-        <div class="timeline" data-title="markdown语法使用说明">
-            <div class="timeline-tail"></div>
-            <div class="timeline-content">
-                <div class="item-time">2022/5/10</div>
-                <a href="/2022/05/10/Markdown-study/">
-                    <h3>Markdown 语法使用说明</h3>
+            
+            <span class="tag">
+                
+                <a href="/tags/markdown/" style="color: #00a596">
+                    Markdown
                 </a>
-                <div class="info">
-                    
-                    <span class="category">
-                        <a href="/categories/tutorial/">
-                            <span class="icon">
-                                <i class="fa-solid fa-bookmark fa-fw"></i>
-                            </span>
-                            教程
-                        </a>
-                    </span>
-                    
-                    
-                    <span class="tags">
-                        <span class="icon">
-                            <i class="fa-solid fa-tags fa-fw"></i>
-                        </span>
-                        
-                        
-                        <span class="tag">
-                            
-                            <a href="/tags/markdown/" style="color: #03a9f4">
-                                Markdown
-                            </a>
-                        </span>
-                        
-                    </span>
-                    
-                </div>
-            </div>
-        </div>
-        
-        <div class="timeline" data-title="hellotcd_rose">
-            <div class="timeline-tail"></div>
-            <div class="timeline-content">
-                <div class="item-time">2026/3/24</div>
-                <a href="/2026/03/24/hi/">
-                    <h3>Hello Tcd_Rose</h3>
-                </a>
-                <div class="info">
-                    
-                    
-                    <span class="tags">
-                        <span class="icon">
-                            <i class="fa-solid fa-tags fa-fw"></i>
-                        </span>
-                        
-                        
-                        <span class="tag">
-                            
-                            <a href="/tags/%E7%94%9F%E6%B4%BB/" style="color: #ffa2c4">
-                                生活
-                            </a>
-                        </span>
-                        
-                        <span class="tag">
-                            
-                            <a href="/tags/%E9%9A%8F%E7%AC%94/" style="color: #00a596">
-                                随笔
-                            </a>
-                        </span>
-                        
-                    </span>
-                    
-                </div>
-            </div>
-        </div>
+            </span>
+            
+        </span>
         
     </div>
+    
+    <div class="content" v-pre>
+        <p><a target="_blank" rel="noopener" href="https://github.com/theme-particlex/hexo-theme-particlex">ParticleX</a> （超链接示例）主题，是本站的主题，。</p>
+<span id="more"></span>
+
+<p>原项目 <code>README.md</code> 里说：</p>
+<blockquote>
+<p>目前有 Full、Night 和 Maiden <strong>两个</strong>主题样式。</p>
+</blockquote>
+<p>但是更改后只有一种了，如果你想改颜色就在 <code>main.css</code> 里替换吧。</p>
+<h1 id="1-一级标题示例"><a href="#1-一级标题示例" class="headerlink" title="1. 一级标题示例"></a>1. 一级标题示例</h1><h1 id="2-代码块示例"><a href="#2-代码块示例" class="headerlink" title="2. 代码块示例"></a>2. 代码块示例</h1><pre><code class="bash">cd themes
+git clone https://github.com/theme-particlex/hexo-theme-particlex.git particlex --depth=1
+</code></pre>
+<pre><code class="yaml">theme: particlex
+</code></pre>
+<h2 id="2-1-二级标题示例"><a href="#2-1-二级标题示例" class="headerlink" title="2.1. 二级标题示例"></a>2.1. 二级标题示例</h2><h1 id="3-一级标题示例"><a href="#3-一级标题示例" class="headerlink" title="3. 一级标题示例"></a>3. 一级标题示例</h1><h2 id="3-1-二级标题示例"><a href="#3-1-二级标题示例" class="headerlink" title="3.1. 二级标题示例"></a>3.1. 二级标题示例</h2><h2 id="3-2-二级标题示例"><a href="#3-2-二级标题示例" class="headerlink" title="3.2. 二级标题示例"></a>3.2. 二级标题示例</h2><h3 id="3-2-1-三级标题示例"><a href="#3-2-1-三级标题示例" class="headerlink" title="3.2.1. 三级标题示例"></a>3.2.1. 三级标题示例</h3><p>图片示例：</p>
+<img src="/images/1.jpg" alt="描述" style="width:30%; max-width:800px;">
+    </div>
+    
+    
+    
+    
+    
+    <div id="comment">
+        <div id="waline-container"></div>
+    </div>
+    
+    
+    
 </div>
 
             <footer id="footer">
@@ -264,6 +255,29 @@
         
     </div>
     <script src="/js/main.js"></script>
+    
+    
+
+
+<script>
+    Waline.init({
+        el: "#waline-container",
+        serverURL: "https://hello-steel-six.vercel.app/",
+        commentCount: true,
+        pageview: false,
+        emoji: "https://unpkg.com/@waline/emojis@1.2.0/weibo,https://unpkg.com/@waline/emojis@1.2.0/alus,https://unpkg.com/@waline/emojis@1.2.0/bilibili,https://unpkg.com/@waline/emojis@1.2.0/qq,https://unpkg.com/@waline/emojis@1.2.0/tieba,https://unpkg.com/@waline/emojis@1.2.0/tw-emoji".split(","),
+        meta: "nick,mail,link".split(","),
+        requiredMeta: "nick".split(","),
+        lang: "zh-CN",
+        wordLimit: 0,
+        pageSize: "10",
+        login: "enable",
+        
+    });
+</script>
+
+
+
     
     <canvas id="fireworks" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;"></canvas>
     <script script src="https://s4.zstatic.net/ajax/libs/animejs/3.2.1/anime.min.js"></script>
