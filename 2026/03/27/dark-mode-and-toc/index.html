@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
-    <title>Hello Tcd_Rose | Tcd_Rose</title>
+    <title>给 ParticleX 主题添加深色模式和目录导航 | Tcd_Rose</title>
     <meta name="author" content="Tcd_Rose" />
     <meta name="description" content="你来了~" />
     <meta name="keywords" content="" />
@@ -191,22 +191,22 @@
         <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
             <div class="article">
     <div>
-        <h1>Hello Tcd_Rose</h1>
+        <h1>给 ParticleX 主题添加深色模式和目录导航</h1>
     </div>
     <div class="info">
         <span class="date">
             <span class="icon">
                 <i class="fa-solid fa-calendar fa-fw"></i>
             </span>
-            2026/3/24
+            2026/3/27
         </span>
         
         <span class="category">
-            <a href="/categories/7788/">
+            <a href="/categories/tutorial/">
                 <span class="icon">
                     <i class="fa-solid fa-bookmark fa-fw"></i>
                 </span>
-                7788
+                tutorial
             </a>
         </span>
         
@@ -219,22 +219,15 @@
             
             <span class="tag">
                 
-                <a href="/tags/%E7%94%9F%E6%B4%BB/" style="color: #03a9f4">
-                    生活
+                <a href="/tags/hexo/" style="color: #00bcd4">
+                    hexo
                 </a>
             </span>
             
             <span class="tag">
                 
-                <a href="/tags/%E9%9A%8F%E7%AC%94/" style="color: #00a596">
-                    随笔
-                </a>
-            </span>
-            
-            <span class="tag">
-                
-                <a href="/tags/hexo/" style="color: #03a9f4">
-                    Hexo
+                <a href="/tags/%E4%B8%BB%E9%A2%98%E5%BC%80%E5%8F%91/" style="color: #ffa2c4">
+                    主题开发
                 </a>
             </span>
             
@@ -243,14 +236,132 @@
     </div>
     
     <div class="content" id="main-content" v-pre>
-        <!-- ![封面图](/images/1.jpg) -->
-
-<p>是新的个人主页 + 博客了</p>
-<blockquote>
-<p>今天天气真好，我决定开始写博客了！</p>
-</blockquote>
+        <p>最近给博客的 ParticleX 主题手动实现了深色模式切换和文章目录导航，记录一下思路和改动细节。</p>
 <span id="more"></span>
-<img src="/images/1.jpg" alt="描述" style="width:30%; max-width:800px;">
+
+<h2 id="深色模式"><a href="#深色模式" class="headerlink" title="深色模式"></a>深色模式</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>核心思路来自 TailwindCSS 的深色模式方案：</p>
+<ul>
+<li>用 <code>document.documentElement.classList</code> 在 <code>&lt;html&gt;</code> 标签上添加&#x2F;移除 <code>dark</code> 类</li>
+<li>CSS 里用 <code>:root.dark</code> 选择器定义深色下的颜色变量</li>
+<li>用 <code>localStorage</code> 存储用户的主题偏好，支持三种状态：<code>auto</code>（跟随系统）、<code>light</code>、<code>dark</code></li>
+<li>用 <code>window.matchMedia(&quot;(prefers-color-scheme: dark)&quot;).matches</code> 检测系统主题</li>
+</ul>
+<p>主题切换顺序是：<code>auto → light → dark → auto</code>，循环切换。</p>
+<h3 id="改动的文件"><a href="#改动的文件" class="headerlink" title="改动的文件"></a>改动的文件</h3><p><strong><code>themes/particlex/_config.yml</code></strong></p>
+<p>给 highlight 加上深色主题配置：</p>
+<pre><code class="yaml">highlight:
+    enable: true
+    style: github
+    styleDark: github-dark
+</code></pre>
+<p><strong><code>themes/particlex/layout/import.ejs</code></strong></p>
+<p>引入深色代码高亮样式，默认 <code>disabled</code>，深色模式时由 JS 启用：</p>
+<pre><code class="html">&lt;link
+    rel=&quot;stylesheet&quot;
+    href=&quot;.../styles/&lt;%= theme.highlight.style %&gt;.min.css&quot;
+/&gt;
+&lt;link
+    rel=&quot;stylesheet&quot;
+    id=&quot;highlight-style-dark&quot;
+    disabled
+    href=&quot;.../styles/&lt;%= theme.highlight.styleDark || &#39;github-dark&#39; %&gt;.min.css&quot;
+/&gt;
+</code></pre>
+<p><strong><code>themes/particlex/layout/layout.ejs</code></strong></p>
+<p>在 <code>&lt;head&gt;</code> 里加防白屏闪烁脚本，页面渲染前就先判断主题并加上 <code>dark</code> 类，避免刷新时出现短暂白屏：</p>
+<pre><code class="html">&lt;script&gt;
+    if (localStorage.getItem(&#39;theme&#39;) === &#39;dark&#39; ||
+        (!(&#39;theme&#39; in localStorage) &amp;&amp; window.matchMedia(&#39;(prefers-color-scheme: dark)&#39;).matches)
+    ) &#123;
+        document.documentElement.classList.add(&#39;dark&#39;);
+    &#125;
+&lt;/script&gt;
+</code></pre>
+<blockquote>
+<p>这段脚本必须放在 <code>&lt;head&gt;</code> 里、CSS 加载之前执行，否则还是会闪。</p>
+</blockquote>
+<p><strong><code>themes/particlex/layout/menu.ejs</code></strong></p>
+<p>在导航栏右侧加切换按钮，图标根据当前主题状态动态切换：</p>
+<pre><code class="html">&lt;button id=&quot;theme-toggle&quot; @click=&quot;handleThemeSwitch&quot; :title=&quot;theme&quot;&gt;
+    &lt;i class=&quot;fa-solid&quot;
+       :class=&quot;theme === &#39;dark&#39; ? &#39;fa-sun&#39; : theme === &#39;light&#39; ? &#39;fa-moon&#39; : &#39;fa-circle-half-stroke&#39;&quot;&gt;
+    &lt;/i&gt;
+&lt;/button&gt;
+</code></pre>
+<p>三种图标对应三种状态：</p>
+<ul>
+<li><code>fa-circle-half-stroke</code> → auto（跟随系统）</li>
+<li><code>fa-moon</code> → light（浅色，点击切深色）</li>
+<li><code>fa-sun</code> → dark（深色，点击切回 auto）</li>
+</ul>
+<p><strong><code>themes/particlex/source/js/main.js</code></strong></p>
+<p>这里的逻辑其实主题本身已经写好了，主要包括：</p>
+<pre><code class="js">// 初始化时读取 localStorage
+theme: localStorage.getItem(&quot;theme&quot;) || &quot;auto&quot;,
+
+// 检测系统深色模式
+isSystemDarkMode() &#123;
+    return window.matchMedia(&quot;(prefers-color-scheme: dark)&quot;).matches;
+&#125;,
+
+// 设置深色/浅色
+setDarkMode(dark) &#123;
+    if (dark) &#123;
+        document.documentElement.classList.add(&quot;dark&quot;);
+        document.getElementById(&quot;highlight-style-dark&quot;).removeAttribute(&quot;disabled&quot;);
+    &#125; else &#123;
+        document.documentElement.classList.remove(&quot;dark&quot;);
+        document.getElementById(&quot;highlight-style-dark&quot;).setAttribute(&quot;disabled&quot;, &quot;&quot;);
+    &#125;
+&#125;,
+
+// 点击按钮循环切换
+handleThemeSwitch() &#123;
+    this.theme = ((theme) =&gt; &#123;
+        switch (theme) &#123;
+            case &quot;auto&quot;:  this.setDarkMode(false); return &quot;light&quot;;
+            case &quot;light&quot;: this.setDarkMode(true);  return &quot;dark&quot;;
+            case &quot;dark&quot;:
+                this.isSystemDarkMode() ? this.setDarkMode(true) : this.setDarkMode(false);
+                return &quot;auto&quot;;
+        &#125;
+    &#125;)(this.theme)
+&#125;,
+</code></pre>
+<p>页面卸载前把主题偏好写回 <code>localStorage</code>，<code>auto</code> 状态则清除，下次打开重新跟随系统：</p>
+<pre><code class="js">window.addEventListener(&quot;beforeunload&quot;, () =&gt; &#123;
+    if (this.theme === &quot;auto&quot;)
+        localStorage.removeItem(&quot;theme&quot;);
+    else
+        localStorage.setItem(&quot;theme&quot;, this.theme);
+&#125;);
+</code></pre>
+<hr>
+<h2 id="目录导航（TOC）"><a href="#目录导航（TOC）" class="headerlink" title="目录导航（TOC）"></a>目录导航（TOC）</h2><h3 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h3><p><code>toc.js</code> 里用 Vue 组件实现，挂载后扫描 <code>id=&quot;main-content&quot;</code> 容器内所有 <code>H1~H6</code> 标签，自动生成目录列表。滚动时监听每个标题距页面顶部的距离，高亮当前可见的标题。</p>
+<p>目录固定在页面右侧（<code>position: fixed</code>），宽屏（&gt;1300px）显示，窄屏自动隐藏。</p>
+<h3 id="改动的文件-1"><a href="#改动的文件-1" class="headerlink" title="改动的文件"></a>改动的文件</h3><p><strong><code>themes/particlex/layout/import.ejs</code></strong></p>
+<p>在 post 页面加载 <code>toc.js</code>：</p>
+<pre><code class="html">&lt;% if (type === &quot;post&quot;) &#123; %&gt;
+&lt;script src=&quot;&lt;%- url_for(&quot;/js/lib/toc.js&quot;) %&gt;&quot;&gt;&lt;/script&gt;
+&lt;% &#125; %&gt;
+</code></pre>
+<p><strong><code>themes/particlex/layout/post.ejs</code></strong></p>
+<p>给文章内容容器加上 <code>id=&quot;main-content&quot;</code>，这是 <code>toc.js</code> 扫描标题的入口：</p>
+<pre><code class="html">&lt;div class=&quot;content&quot; id=&quot;main-content&quot; v-pre&gt;
+    &lt;%- page.content %&gt;
+&lt;/div&gt;
+</code></pre>
+<p>然后在文章内容后面放 <code>&lt;toc-component&gt;</code> 标签：</p>
+<pre><code class="html">&lt;toc-component&gt;&lt;/toc-component&gt;
+</code></pre>
+<p>Vue 会把它渲染成右侧固定的目录面板。</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>写文章时正常用 Markdown 标题语法，目录会自动生成：</p>
+<pre><code class="markdown">## 一级章节
+### 子章节
+#### 更深的层级
+</code></pre>
+<p>目录最多显示 15 个字符，超出会截断加 <code>...</code>。</p>
+
     </div>
     
     <toc-component></toc-component>
