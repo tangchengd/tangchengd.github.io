@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
-    <title>categories | Tcd_Rose</title>
+    <title>Friends | Tcd_Rose</title>
     <meta name="author" content="Tcd_Rose" />
     <meta name="description" content="你来了~" />
     <meta name="keywords" content="" />
@@ -51,6 +51,14 @@
 
 <script src="/js/lib/preview.js"></script>
 
+
+
+
+
+
+<script src="https://s4.zstatic.net/ajax/libs/waline/2.15.8/waline.min.js"></script>
+<link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/waline/2.15.8/waline.min.css" />
+<link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/waline/2.15.8/waline-meta.min.css" />
 
 
 
@@ -178,34 +186,58 @@
 </transition>
 
         <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
-            <div id="archives">
-    
-    <div class="categories-tags">
-        
-        
-        
-        <span>
-            <a href="/categories/tutorial/" style="background: #ff7d73">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                教程
-            </a>
-        </span>
-        
-        
-        
-        <span>
-            <a href="/categories/7788/" style="background: #ffa2c4">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                7788
-            </a>
+            <div class="article">
+    <div>
+        <h1>Friends</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2026/3/11
         </span>
         
         
     </div>
+    
+    <div class="content" v-pre>
+        <!-- 外层容器：控制整体居中 -->
+<span style="display: block; width: 100%; text-align: center;">
+
+  <!-- ================= 友链卡片 1 ================= -->
+  <a target="_blank" rel="noopener" href="https://meng.me/" style="display: inline-flex; align-items: center; box-sizing: border-box; width: 40%; margin: 15px; padding: 20px; color: rgb(30, 62, 63); background: rgb(255, 255, 255); border: 1px solid rgba(0, 0, 0, 0.133); border-radius: 10px; text-decoration: none;">
+      <!-- 头像 -->
+      <img src="https://www.meng.me/images/avatar.webp" style="display: inline; width: 100px; margin: 0px; border-radius: 50%;">
+      <!-- 文字信息容器 -->
+      <span style="display: inline-flex; flex-wrap: wrap; justify-content: center; margin-left: 20px;">
+          <!-- 名字 -->
+          <span style="font-size: 20px; font-weight: 700; width: 100%; text-align: center;">mGod</span>
+          <!-- 简介 -->
+          <span style="font-size: 14px; margin-top: 5px; width: 100%; text-align: center; color: #666;">This is mGod</span>
+      </span>
+  </a>
+
+  <!-- ================= 友链卡片 2 ================= -->
+  <a target="_blank" rel="noopener" href="https://argvchs.netlify.app/" style="display: inline-flex; align-items: center; box-sizing: border-box; width: 40%; margin: 15px; padding: 20px; color: rgb(30, 62, 63); background: rgb(255, 255, 255); border: 1px solid rgba(0, 0, 0, 0.133); border-radius: 10px; text-decoration: none;">
+      <img src="https://static-argvchs.netlify.app/images/avatar.jpg" style="display: inline; width: 100px; margin: 0px; border-radius: 50%;">
+      <span style="display: inline-flex; flex-wrap: wrap; justify-content: center; margin-left: 20px;">
+          <span style="font-size: 20px; font-weight: 700; width: 100%; text-align: center;">Argvchs</span>
+          <span style="font-size: 14px; margin-top: 5px; width: 100%; text-align: center; color: #666;">Here's an argvchs...</span>
+      </span>
+  </a>
+</span>
+    </div>
+    
+    
+    
+    
+    
+    <div id="comment">
+        <div id="waline-container"></div>
+    </div>
+    
+    
     
 </div>
 
@@ -237,6 +269,30 @@
         
     </div>
     <script src="/js/main.js"></script>
+    
+    
+
+
+<script>
+    Waline.init({
+        el: "#waline-container",
+        serverURL: "https://hello-steel-six.vercel.app/",
+        commentCount: true,
+        pageview: false,
+        emoji: "https://unpkg.com/@waline/emojis@1.2.0/weibo,https://unpkg.com/@waline/emojis@1.2.0/alus,https://unpkg.com/@waline/emojis@1.2.0/bilibili,https://unpkg.com/@waline/emojis@1.2.0/qq,https://unpkg.com/@waline/emojis@1.2.0/tieba,https://unpkg.com/@waline/emojis@1.2.0/tw-emoji".split(","),
+        meta: "nick,mail,link".split(","),
+        requiredMeta: "nick".split(","),
+        lang: "zh-CN",
+        wordLimit: 0,
+        pageSize: "10",
+        login: "enable",
+        
+        dark: "html.dark",
+    });
+</script>
+
+
+
     
     <canvas id="fireworks" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;"></canvas>
     <script script src="https://s4.zstatic.net/ajax/libs/animejs/3.2.1/anime.min.js"></script>

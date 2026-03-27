@@ -12,6 +12,13 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
     />
     <link rel="icon" href="/images/avatar.jpg" />
+    <script>
+        if (localStorage.getItem('theme') === 'dark' ||
+            (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        ) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
     <link rel="preconnect" href="https://s4.zstatic.net" />
 <script src="https://s4.zstatic.net/ajax/libs/vue/3.3.7/vue.global.prod.min.js"></script>
 <link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
@@ -31,6 +38,12 @@
 <link
     rel="stylesheet"
     href="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+/>
+<link
+    rel="stylesheet"
+    id="highlight-style-dark"
+    disabled
+    href="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
 />
 <script src="/js/lib/highlight.js"></script>
 
@@ -89,6 +102,12 @@
             <span>&ensp;标签</span>
         </a>
         
+        <a href="/friends">
+            <i class="fa-solid fa-user-friends fa-fw"></i>
+            <span>&ensp;朋友</span>
+        </a>
+        
+        <i class="fa-solid fa-fw theme-switcher" :class="theme === 'dark' ? 'fa-moon' : theme === 'light' ? 'fa-sun' : 'fa-circle-half-stroke'" @click="handleThemeSwitch"></i>
     </nav>
     <nav id="mobile-menu">
         <div class="title" @click="showMenuItems = !showMenuItems">
@@ -143,6 +162,15 @@
                     </div>
                 </a>
                 
+                <a href="/friends">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-user-friends fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">朋友</div>
+                    </div>
+                </a>
+                
             </div>
         </transition>
     </nav>
@@ -186,21 +214,21 @@
                         
                         <span class="tag">
                             
-                            <a href="/tags/%E7%94%9F%E6%B4%BB/" style="color: #ffa2c4">
+                            <a href="/tags/%E7%94%9F%E6%B4%BB/" style="color: #00bcd4">
                                 生活
                             </a>
                         </span>
                         
                         <span class="tag">
                             
-                            <a href="/tags/%E9%9A%8F%E7%AC%94/" style="color: #00bcd4">
+                            <a href="/tags/%E9%9A%8F%E7%AC%94/" style="color: #ffa2c4">
                                 随笔
                             </a>
                         </span>
                         
                         <span class="tag">
                             
-                            <a href="/tags/hexo/" style="color: #03a9f4">
+                            <a href="/tags/hexo/" style="color: #00bcd4">
                                 Hexo
                             </a>
                         </span>
@@ -238,7 +266,7 @@
                         
                         <span class="tag">
                             
-                            <a href="/tags/markdown/" style="color: #00a596">
+                            <a href="/tags/markdown/" style="color: #ff7d73">
                                 Markdown
                             </a>
                         </span>
