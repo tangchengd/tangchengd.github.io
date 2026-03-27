@@ -61,7 +61,7 @@ class Topic {
   }
 
   set level(value) {
-    this.className = TOC_CLASSNAME_PREFIX + value;
+    this._className = TOC_CLASSNAME_PREFIX + value;
     this._level = value;
   }
 }
@@ -169,7 +169,7 @@ const TocComponent = Vue.defineComponent({
       adjustTocLabelPos();
     }
 
-    Vue.onMounted(() => {
+    function scanToc() {
       const element = document.getElementById(SCAN_FROM_ELEMENT_ID);
       if (!element) {
         return;
@@ -191,23 +191,29 @@ const TocComponent = Vue.defineComponent({
         }
         toc.push(new Topic(value, level));
         minLevel = Math.min(minLevel, level);
-        topics.value = toc;
       });
-      // 将topic的level换成相对level，<b>保证最低level为1</b
-      if (minLevel > 1) {
+      // 将topic的level换成相对level，保证最低level为1
+      if (minLevel > 1 && toc.length > 0) {
         const gap = minLevel - 1;
         toc.forEach((value) => {
           value.level -= gap;
         });
       }
+      topics.value = toc;
+      adjustTocLabelPos();
+    }
+
+    Vue.onMounted(() => {
+      scanToc();
       window.addEventListener("scroll", scrollListener);
       window.addEventListener("resize", resizeListener);
-      adjustTocLabelPos();
+      window.addEventListener("crypto-decrypted", scanToc);
     });
 
     Vue.onUnmounted(() => {
       window.removeEventListener("scroll", scrollListener);
       window.removeEventListener("resize", resizeListener);
+      window.removeEventListener("crypto-decrypted", scanToc);
     });
 
     const adjustTocLabelPos = () => {

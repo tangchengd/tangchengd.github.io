@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
-    <title>Tags: Markdown | Tcd_Rose</title>
+    <title>修复加密文章解密后目录消失的问题 | Tcd_Rose</title>
     <meta name="author" content="Tcd_Rose" />
     <meta name="description" content="你来了~" />
     <meta name="keywords" content="" />
@@ -55,6 +55,16 @@
 
 
 
+
+<script src="https://s4.zstatic.net/ajax/libs/waline/2.15.8/waline.min.js"></script>
+<link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/waline/2.15.8/waline.min.css" />
+<link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/waline/2.15.8/waline-meta.min.css" />
+
+
+
+
+
+<script src="/js/lib/toc.js"></script>
 
 <link rel="stylesheet" href="/css/main.css" />
 
@@ -179,118 +189,136 @@
 </transition>
 
         <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
-            <div id="archives">
-    
-    <div class="categories-tags">
+            <div class="article">
+    <div>
+        <h1>修复加密文章解密后目录消失的问题</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2026/3/27
+        </span>
         
-        
-        
-        <span>
-            <a href="/tags/markdown/" style="background: linear-gradient(120deg, #9abbf7 0%, #ffbbf4 100%)">
+        <span class="category">
+            <a href="/categories/tutorial/">
                 <span class="icon">
-                    <i class="fa-solid fa-tags fa-fw"></i>
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
                 </span>
-                Markdown
+                教程
             </a>
         </span>
         
         
-        
-        
-        
-        <span>
-            <a href="/tags/hexo/" style="background: #ff7d73">
-                <span class="icon">
-                    <i class="fa-solid fa-tags fa-fw"></i>
-                </span>
-                hexo
-            </a>
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/hexo/" style="color: #03a9f4">
+                    hexo
+                </a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/%E4%B8%BB%E9%A2%98%E5%BC%80%E5%8F%91/" style="color: #ff7d73">
+                    主题开发
+                </a>
+            </span>
+            
         </span>
-        
-        
-        
-        <span>
-            <a href="/tags/%E4%B8%BB%E9%A2%98%E5%BC%80%E5%8F%91/" style="background: #03a9f4">
-                <span class="icon">
-                    <i class="fa-solid fa-tags fa-fw"></i>
-                </span>
-                主题开发
-            </a>
-        </span>
-        
-        
-        
-        <span>
-            <a href="/tags/%E7%94%9F%E6%B4%BB/" style="background: #ff7d73">
-                <span class="icon">
-                    <i class="fa-solid fa-tags fa-fw"></i>
-                </span>
-                生活
-            </a>
-        </span>
-        
-        
-        
-        <span>
-            <a href="/tags/%E9%9A%8F%E7%AC%94/" style="background: #00a596">
-                <span class="icon">
-                    <i class="fa-solid fa-tags fa-fw"></i>
-                </span>
-                随笔
-            </a>
-        </span>
-        
-        
-        
-        <span>
-            <a href="/tags/hexo/" style="background: #ff7d73">
-                <span class="icon">
-                    <i class="fa-solid fa-tags fa-fw"></i>
-                </span>
-                Hexo
-            </a>
-        </span>
-        
         
     </div>
     
-    <div class="timeline">
-        <div class="timeline-tail"></div>
-        <div class="timeline-content">
-            <div class="item-time">2026/3/25</div>
-            <a href="/2026/03/25/Markdown-study/">
-                <h3>Markdown 语法使用说明</h3>
-            </a>
-            <div class="info">
-                
-                <span class="category">
-                    <a href="/categories/tutorial/">
-                        <span class="icon">
-                            <i class="fa-solid fa-bookmark fa-fw"></i>
-                        </span>
-                        教程
-                    </a>
-                </span>
-                
-                
-                <span class="tags">
-                    <span class="icon">
-                        <i class="fa-solid fa-tags fa-fw"></i>
-                    </span>
-                    
-                    
-                    <span class="tag">
-                        
-                        <a href="/tags/markdown/" style="color: #ffa2c4">
-                            Markdown
-                        </a>
-                    </span>
-                    
-                </span>
-                
-            </div>
-        </div>
+    <div class="content" id="main-content" v-pre>
+        <p>记录一个给 ParticleX 主题修复加密文章解密后目录（TOC）消失的 bug，顺带修了一个隐藏已久的 setter 错误。</p>
+<span id="more"></span>
+
+<h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>加密文章输入正确密码解密后，右侧目录导航不显示任何内容，一片空白。</p>
+<h2 id="根本原因"><a href="#根本原因" class="headerlink" title="根本原因"></a>根本原因</h2><p>有两个 bug 叠在一起。</p>
+<h3 id="Bug-1：TOC-初始化时机问题"><a href="#Bug-1：TOC-初始化时机问题" class="headerlink" title="Bug 1：TOC 初始化时机问题"></a>Bug 1：TOC 初始化时机问题</h3><p><code>toc.js</code> 里的 <code>TocComponent</code> 在 <code>onMounted</code> 时扫描 <code>#main-content</code> 容器内的标题节点：</p>
+<pre><code class="js">Vue.onMounted(() =&gt; &#123;
+  const element = document.getElementById(&quot;main-content&quot;);
+  // 遍历子节点，找 H1~H6 标签...
+&#125;);
+</code></pre>
+<p>但加密文章的 <code>#main-content</code> 初始是空的，内容在解密后才通过 <code>innerHTML</code> 动态填充。Vue 组件挂载时标题根本不存在，所以目录为空。</p>
+<h3 id="Bug-2：Topic-类的-level-setter-写错了"><a href="#Bug-2：Topic-类的-level-setter-写错了" class="headerlink" title="Bug 2：Topic 类的 level setter 写错了"></a>Bug 2：Topic 类的 level setter 写错了</h3><p><code>Topic</code> 类里有一个 setter：</p>
+<pre><code class="js">set level(value) &#123;
+  this.className = TOC_CLASSNAME_PREFIX + value;  // ❌ 错误
+  this._level = value;
+&#125;
+</code></pre>
+<p><code>className</code> 只有 getter 没有 setter，直接赋值会抛 <code>Cannot set property className of #&lt;Topic&gt; which has only a getter</code>。正确写法应该是 <code>this._className</code>。</p>
+<p>这个 bug 原本在普通文章里也会触发（<code>minLevel &gt; 1</code> 时会执行 <code>value.level -= gap</code>），只是之前没被发现。</p>
+<h2 id="修复方案"><a href="#修复方案" class="headerlink" title="修复方案"></a>修复方案</h2><h3 id="修复-Bug-2：先把-setter-改对"><a href="#修复-Bug-2：先把-setter-改对" class="headerlink" title="修复 Bug 2：先把 setter 改对"></a>修复 Bug 2：先把 setter 改对</h3><p><code>themes/particlex/source/js/lib/toc.js</code>：</p>
+<pre><code class="js">set level(value) &#123;
+  this._className = TOC_CLASSNAME_PREFIX + value;  // ✅ 改为 _className
+  this._level = value;
+&#125;
+</code></pre>
+<h3 id="修复-Bug-1：解密后重新扫描-TOC"><a href="#修复-Bug-1：解密后重新扫描-TOC" class="headerlink" title="修复 Bug 1：解密后重新扫描 TOC"></a>修复 Bug 1：解密后重新扫描 TOC</h3><p>思路是把扫描逻辑抽成独立函数 <code>scanToc</code>，然后监听一个自定义事件 <code>crypto-decrypted</code>，解密成功后触发它。</p>
+<p>**<code>themes/particlex/source/js/lib/toc.js</code>**，把 <code>onMounted</code> 里的扫描逻辑抽出来：</p>
+<pre><code class="js">function scanToc() &#123;
+  const element = document.getElementById(SCAN_FROM_ELEMENT_ID);
+  if (!element) return;
+  const toc = [];
+  let minLevel = 1000;
+  element.childNodes.forEach((value) =&gt; &#123;
+    let level;
+    if (!(value.nodeName.length === 2 &amp;&amp; value.nodeName[0] === &quot;H&quot; &amp;&amp;
+          !Number.isNaN((level = Number.parseInt(value.nodeName[1]))))) return;
+    toc.push(new Topic(value, level));
+    minLevel = Math.min(minLevel, level);
+  &#125;);
+  if (minLevel &gt; 1 &amp;&amp; toc.length &gt; 0) &#123;
+    const gap = minLevel - 1;
+    toc.forEach((value) =&gt; &#123; value.level -= gap; &#125;);
+  &#125;
+  topics.value = toc;
+  adjustTocLabelPos();
+&#125;
+
+Vue.onMounted(() =&gt; &#123;
+  scanToc();
+  window.addEventListener(&quot;scroll&quot;, scrollListener);
+  window.addEventListener(&quot;resize&quot;, resizeListener);
+  window.addEventListener(&quot;crypto-decrypted&quot;, scanToc);  // 监听解密事件
+&#125;);
+
+Vue.onUnmounted(() =&gt; &#123;
+  window.removeEventListener(&quot;scroll&quot;, scrollListener);
+  window.removeEventListener(&quot;resize&quot;, resizeListener);
+  window.removeEventListener(&quot;crypto-decrypted&quot;, scanToc);  // 清理
+&#125;);
+</code></pre>
+<p>**<code>themes/particlex/source/js/lib/crypto.js</code>**，解密成功后派发事件：</p>
+<pre><code class="js">if (CryptoJS.SHA256(decrypted).toString() === shasum) &#123;
+  this.cryptoStatus = &quot;success&quot;;
+  content.innerHTML = decrypted;
+  this.render();
+  window.dispatchEvent(new CustomEvent(&quot;crypto-decrypted&quot;));  // 通知 TOC 重新扫描
+&#125;
+</code></pre>
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p>解密成功后，<code>crypto-decrypted</code> 事件触发，TOC 重新扫描此时已经填充好内容的 <code>#main-content</code>，目录正常渲染出来。普通文章不受影响，<code>onMounted</code> 时直接扫描即可。</p>
+
     </div>
+    
+    <toc-component></toc-component>
+    
+    
+    
+    
+    <div id="comment">
+        <div id="waline-container"></div>
+    </div>
+    
+    
     
 </div>
 
@@ -322,6 +350,30 @@
         
     </div>
     <script src="/js/main.js"></script>
+    
+    
+
+
+<script>
+    Waline.init({
+        el: "#waline-container",
+        serverURL: "https://hello-steel-six.vercel.app/",
+        commentCount: true,
+        pageview: false,
+        emoji: "https://unpkg.com/@waline/emojis@1.2.0/weibo,https://unpkg.com/@waline/emojis@1.2.0/alus,https://unpkg.com/@waline/emojis@1.2.0/bilibili,https://unpkg.com/@waline/emojis@1.2.0/qq,https://unpkg.com/@waline/emojis@1.2.0/tieba,https://unpkg.com/@waline/emojis@1.2.0/tw-emoji".split(","),
+        meta: "nick,mail,link".split(","),
+        requiredMeta: "nick".split(","),
+        lang: "zh-CN",
+        wordLimit: 0,
+        pageSize: "10",
+        login: "enable",
+        
+        dark: "html.dark",
+    });
+</script>
+
+
+
     
     <canvas id="fireworks" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;"></canvas>
     <script script src="https://s4.zstatic.net/ajax/libs/animejs/3.2.1/anime.min.js"></script>

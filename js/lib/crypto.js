@@ -15,6 +15,7 @@ mixins.crypto = {
                     this.cryptoStatus = "success";
                     content.innerHTML = decrypted;
                     this.render();
+                    window.dispatchEvent(new CustomEvent("crypto-decrypted"));
                 } else this.cryptoStatus = "failure";
             } catch {
                 this.cryptoStatus = "failure";
