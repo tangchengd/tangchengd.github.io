@@ -29,6 +29,14 @@ const app = Vue.createApp({
     mounted() {
         window.addEventListener("scroll", this.handleScroll, true);
         this.render();
+        // h1 字符拆分动画
+        const title = document.getElementById("home-title");
+        if (title) {
+            const text = title.textContent;
+            title.innerHTML = [...text].map((char, i) =>
+                `<span class="char" style="animation-delay:${i * 0.18}s">${char === " " ? "&nbsp;" : char}</span>`
+            ).join("");
+        }
     },
     methods: {
         render() {
