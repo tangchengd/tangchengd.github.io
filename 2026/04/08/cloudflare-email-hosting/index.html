@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
-    <title>修复加密文章解密后目录消失的问题 | Tcd_Rose</title>
+    <title>Cloudflare 邮箱托管教程 | Tcd_Rose</title>
     <meta name="author" content="Tcd_Rose" />
     <meta name="description" content="你来了~" />
     <meta name="keywords" content="" />
@@ -51,6 +51,9 @@
 
 <script src="/js/lib/preview.js"></script>
 
+
+<script src="https://s4.zstatic.net/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script src="/js/lib/crypto.js"></script>
 
 
 
@@ -191,14 +194,14 @@
         <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
             <div class="article">
     <div>
-        <h1>修复加密文章解密后目录消失的问题</h1>
+        <h1>Cloudflare 邮箱托管教程</h1>
     </div>
     <div class="info">
         <span class="date">
             <span class="icon">
                 <i class="fa-solid fa-calendar fa-fw"></i>
             </span>
-            2026/3/27
+            2026/4/8
         </span>
         
         <span class="category">
@@ -219,15 +222,15 @@
             
             <span class="tag">
                 
-                <a href="/tags/hexo/" style="color: #ff7d73">
-                    hexo
+                <a href="/tags/%E6%95%99%E7%A8%8B/" style="color: #00bcd4">
+                    教程
                 </a>
             </span>
             
             <span class="tag">
                 
-                <a href="/tags/%E4%B8%BB%E9%A2%98%E5%BC%80%E5%8F%91/" style="color: #03a9f4">
-                    主题开发
+                <a href="/tags/%E9%9A%8F%E7%AC%94/" style="color: #ffa2c4">
+                    随笔
                 </a>
             </span>
             
@@ -235,79 +238,21 @@
         
     </div>
     
-    <div class="content" id="main-content" v-pre>
-        <p>记录一个给 ParticleX 主题修复加密文章解密后目录（TOC）消失的 bug，顺带修了一个隐藏已久的 setter 错误。</p>
-<span id="more"></span>
-
-<h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>加密文章输入正确密码解密后，右侧目录导航不显示任何内容，一片空白。</p>
-<h2 id="根本原因"><a href="#根本原因" class="headerlink" title="根本原因"></a>根本原因</h2><p>有两个 bug 叠在一起。</p>
-<h3 id="Bug-1：TOC-初始化时机问题"><a href="#Bug-1：TOC-初始化时机问题" class="headerlink" title="Bug 1：TOC 初始化时机问题"></a>Bug 1：TOC 初始化时机问题</h3><p><code>toc.js</code> 里的 <code>TocComponent</code> 在 <code>onMounted</code> 时扫描 <code>#main-content</code> 容器内的标题节点：</p>
-<pre><code class="js">Vue.onMounted(() =&gt; &#123;
-  const element = document.getElementById(&quot;main-content&quot;);
-  // 遍历子节点，找 H1~H6 标签...
-&#125;);
-</code></pre>
-<p>但加密文章的 <code>#main-content</code> 初始是空的，内容在解密后才通过 <code>innerHTML</code> 动态填充。Vue 组件挂载时标题根本不存在，所以目录为空。</p>
-<h3 id="Bug-2：Topic-类的-level-setter-写错了"><a href="#Bug-2：Topic-类的-level-setter-写错了" class="headerlink" title="Bug 2：Topic 类的 level setter 写错了"></a>Bug 2：Topic 类的 level setter 写错了</h3><p><code>Topic</code> 类里有一个 setter：</p>
-<pre><code class="js">set level(value) &#123;
-  this.className = TOC_CLASSNAME_PREFIX + value;  // ❌ 错误
-  this._level = value;
-&#125;
-</code></pre>
-<p><code>className</code> 只有 getter 没有 setter，直接赋值会抛 <code>Cannot set property className of #&lt;Topic&gt; which has only a getter</code>。正确写法应该是 <code>this._className</code>。</p>
-<p>这个 bug 原本在普通文章里也会触发（<code>minLevel &gt; 1</code> 时会执行 <code>value.level -= gap</code>），只是之前没被发现。</p>
-<h2 id="修复方案"><a href="#修复方案" class="headerlink" title="修复方案"></a>修复方案</h2><h3 id="修复-Bug-2：先把-setter-改对"><a href="#修复-Bug-2：先把-setter-改对" class="headerlink" title="修复 Bug 2：先把 setter 改对"></a>修复 Bug 2：先把 setter 改对</h3><p><code>themes/particlex/source/js/lib/toc.js</code>：</p>
-<pre><code class="js">set level(value) &#123;
-  this._className = TOC_CLASSNAME_PREFIX + value;  // ✅ 改为 _className
-  this._level = value;
-&#125;
-</code></pre>
-<h3 id="修复-Bug-1：解密后重新扫描-TOC"><a href="#修复-Bug-1：解密后重新扫描-TOC" class="headerlink" title="修复 Bug 1：解密后重新扫描 TOC"></a>修复 Bug 1：解密后重新扫描 TOC</h3><p>思路是把扫描逻辑抽成独立函数 <code>scanToc</code>，然后监听一个自定义事件 <code>crypto-decrypted</code>，解密成功后触发它。</p>
-<p>**<code>themes/particlex/source/js/lib/toc.js</code>**，把 <code>onMounted</code> 里的扫描逻辑抽出来：</p>
-<pre><code class="js">function scanToc() &#123;
-  const element = document.getElementById(SCAN_FROM_ELEMENT_ID);
-  if (!element) return;
-  const toc = [];
-  let minLevel = 1000;
-  element.childNodes.forEach((value) =&gt; &#123;
-    let level;
-    if (!(value.nodeName.length === 2 &amp;&amp; value.nodeName[0] === &quot;H&quot; &amp;&amp;
-          !Number.isNaN((level = Number.parseInt(value.nodeName[1]))))) return;
-    toc.push(new Topic(value, level));
-    minLevel = Math.min(minLevel, level);
-  &#125;);
-  if (minLevel &gt; 1 &amp;&amp; toc.length &gt; 0) &#123;
-    const gap = minLevel - 1;
-    toc.forEach((value) =&gt; &#123; value.level -= gap; &#125;);
-  &#125;
-  topics.value = toc;
-  adjustTocLabelPos();
-&#125;
-
-Vue.onMounted(() =&gt; &#123;
-  scanToc();
-  window.addEventListener(&quot;scroll&quot;, scrollListener);
-  window.addEventListener(&quot;resize&quot;, resizeListener);
-  window.addEventListener(&quot;crypto-decrypted&quot;, scanToc);  // 监听解密事件
-&#125;);
-
-Vue.onUnmounted(() =&gt; &#123;
-  window.removeEventListener(&quot;scroll&quot;, scrollListener);
-  window.removeEventListener(&quot;resize&quot;, resizeListener);
-  window.removeEventListener(&quot;crypto-decrypted&quot;, scanToc);  // 清理
-&#125;);
-</code></pre>
-<p>**<code>themes/particlex/source/js/lib/crypto.js</code>**，解密成功后派发事件：</p>
-<pre><code class="js">if (CryptoJS.SHA256(decrypted).toString() === shasum) &#123;
-  this.cryptoStatus = &quot;success&quot;;
-  content.innerHTML = decrypted;
-  this.render();
-  window.dispatchEvent(new CustomEvent(&quot;crypto-decrypted&quot;));  // 通知 TOC 重新扫描
-&#125;
-</code></pre>
-<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p>解密成功后，<code>crypto-decrypted</code> 事件触发，TOC 重新扫描此时已经填充好内容的 <code>#main-content</code>，目录正常渲染出来。普通文章不受影响，<code>onMounted</code> 时直接扫描即可。</p>
-
-    </div>
+    
+    
+    <input
+        id="crypto"
+        :class="['input', cryptoStatus]"
+        :disabled="cryptoStatus === 'success'"
+        ref="crypto"
+        placeholder="文章被加密，请输入密码"
+        data-encrypted="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"
+        data-shasum="ac93233ae9e353dd3ec68e988b72852ec200f7ecdbc98eb80e3016dec7ff64ea"
+        v-model="crypto"
+    />
+    <transition name="fade">
+        <div class="content" id="main-content" ref="content" v-show="cryptoStatus === 'success'"></div>
+    </transition>
     
     <toc-component></toc-component>
     
