@@ -1398,3 +1398,73 @@ ol li {
         width: calc(100% - 30px) !important;
     }
 }
+
+/* ── 签名 SVG ── */
+#canvas {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    display: block;
+    margin: 12px auto 0;
+    overflow: visible;
+}
+
+.signature-path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* 用 1 2 的 dasharray 做扫过效果，pathLength 归一化到 1 */
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 1;
+    opacity: 0;
+    /* 让 stroke 颜色跟随主题文字色 */
+    color: #555;
+}
+
+:root.dark .signature-path {
+    color: #ccc;
+}
+
+/* path2 最左，最先开始 */
+@keyframes sig-draw-2 {
+    0%          { stroke-dashoffset: 1.5; opacity: 0; }
+    8%          { opacity: 1; }
+    35%, 88%    { stroke-dashoffset: 0;   opacity: 1; }
+    97%         { stroke-dashoffset: -.5; opacity: .15; }
+    100%        { stroke-dashoffset: -1.5; opacity: 0; }
+}
+
+/* path1 居中，稍后 */
+@keyframes sig-draw-1 {
+    0%, 12%     { stroke-dashoffset: 1.5; opacity: 0; }
+    20%         { opacity: 1; }
+    40%, 88%    { stroke-dashoffset: 0;   opacity: 1; }
+    97%         { stroke-dashoffset: -.5; opacity: .15; }
+    100%        { stroke-dashoffset: -1.5; opacity: 0; }
+}
+
+/* path3 最右，最后 */
+@keyframes sig-draw-3 {
+    0%, 22%     { stroke-dashoffset: 1.5; opacity: 0; }
+    32%         { opacity: 1; }
+    55%, 88%    { stroke-dashoffset: 0;   opacity: 1; }
+    97%         { stroke-dashoffset: -.5; opacity: .15; }
+    100%        { stroke-dashoffset: -1.5; opacity: 0; }
+}
+
+.path2 {
+    pathLength: 1;
+    animation: sig-draw-2 6s cubic-bezier(.35, 0, .15, 1) infinite;
+}
+
+.path1 {
+    pathLength: 1;
+    animation: sig-draw-1 6s cubic-bezier(.35, 0, .15, 1) infinite;
+}
+
+.path3 {
+    pathLength: 1;
+    animation: sig-draw-3 6s cubic-bezier(.35, 0, .15, 1) infinite;
+}
